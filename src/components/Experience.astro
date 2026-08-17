@@ -1,0 +1,36 @@
+---
+import TimelineItem from './TimelineItem.astro';
+import { experience } from '../data/experience';
+---
+
+<section id="experience" class="section experience">
+  <div class="container">
+    <p class="eyebrow">Experience</p>
+    <h2 class="section-title">The Path Here</h2>
+
+    <ol class="timeline">
+      {experience.map((entry) => <TimelineItem entry={entry} />)}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .timeline {
+    position: relative;
+    margin-top: var(--space-5);
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 0.4em;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(
+      to bottom,
+      var(--color-accent),
+      var(--color-border) 90%
+    );
+  }
+</style>

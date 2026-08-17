@@ -1,0 +1,160 @@
+---
+import { Image } from 'astro:assets';
+import SocialLinks from './SocialLinks.astro';
+import profilePhoto from '../assets/profile-photo.webp';
+import { roles } from '../data/roles';
+---
+
+<section id="hero" class="section hero">
+  <div class="container">
+    <div class="hero__inner">
+      <div class="hero__media">
+        <Image
+          src={profilePhoto}
+          alt="Portrait of Viktor Mikeska"
+          class="hero__photo"
+          width={360}
+          height={360}
+          quality={90}
+          format="webp"
+          fit="cover"
+        />
+      </div>
+
+      <div class="hero__content">
+        <h1 class="hero__name">Viktor Mikeska</h1>
+        <p class="hero__role">
+          <span class="hero__role-viewport">
+            <span id="hero-role-text" aria-hidden="true">{roles[0]}</span>
+          </span>
+          <span class="sr-only">{roles.join(' · ')}</span>
+        </p>
+        <SocialLinks class="hero__mobile-socials" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-top: var(--space-6);
+  }
+
+  .hero__inner {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .hero__media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero__photo {
+    width: 180px;
+    height: 180px;
+    border-radius: 999px;
+    object-fit: cover;
+    border: 3px solid var(--color-accent);
+  }
+
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    gap: var(--space-2);
+  }
+
+  .hero__name {
+    font-size: var(--fs-3xl);
+    letter-spacing: -0.02em;
+  }
+
+  .hero__role {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xl);
+  }
+
+  .hero__role-viewport {
+    display: inline-block;
+    overflow: hidden;
+    height: 1.2em;
+    line-height: 1.2;
+    vertical-align: top;
+    mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black 25%,
+      black 75%,
+      transparent
+    );
+  }
+
+  #hero-role-text {
+    display: inline-block;
+    color: var(--color-accent);
+    line-height: 1.2;
+    transition: transform 0.4s ease;
+  }
+
+  .hero__inner :global(.hero__mobile-socials) {
+    display: none;
+  }
+
+  @media (max-width: 720px) {
+    .hero__inner :global(.hero__mobile-socials) {
+      display: flex;
+    }
+
+    .hero__inner {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: var(--space-4);
+    }
+
+    .hero__inner .hero__media {
+      order: -1;
+    }
+
+    .hero__content {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import { roles } from '../data/roles';
+
+  const el = document.getElementById('hero-role-text');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (el && !prefersReduced && roles.length > 1) {
+    let index = 0;
+    setInterval(() => {
+      // Slide the current word up and out of the viewport.
+      el.style.transition = 'transform 0.4s ease';
+      el.style.transform = 'translateY(-100%)';
+
+      setTimeout(() => {
+        index = (index + 1) % roles.length;
+        el.textContent = roles[index];
+
+        // Snap the new word in below the viewport with no transition...
+        el.style.transition = 'none';
+        el.style.transform = 'translateY(100%)';
+        void el.offsetHeight; // force reflow so the snap isn't animated
+
+        // ...then slide it up into place, like a slot machine reel.
+        requestAnimationFrame(() => {
+          el.style.transition = 'transform 0.4s ease';
+          el.style.transform = 'translateY(0)';
+        });
+      }, 400);
+    }, 3600);
+  }
+</script>

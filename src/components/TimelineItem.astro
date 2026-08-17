@@ -1,0 +1,67 @@
+---
+import type { ExperienceEntry } from '../data/experience';
+
+interface Props {
+  entry: ExperienceEntry;
+}
+
+const { entry } = Astro.props;
+---
+
+<li class="timeline-item">
+  <span class="timeline-item__dot" aria-hidden="true"></span>
+  <div class="timeline-item__card">
+    <p class="timeline-item__period">{entry.period}</p>
+    <h3 class="timeline-item__role">{entry.role}</h3>
+    <p class="timeline-item__company">
+      {entry.company} <span aria-hidden="true">·</span> {entry.location}
+    </p>
+    <p class="timeline-item__summary">{entry.summary}</p>
+  </div>
+</li>
+
+<style>
+  .timeline-item {
+    position: relative;
+    padding-left: var(--space-5);
+    padding-bottom: var(--space-5);
+  }
+
+  .timeline-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .timeline-item__dot {
+    position: absolute;
+    left: 0;
+    top: 0.4em;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--color-bg);
+    border: 2px solid var(--color-accent);
+    box-shadow: 0 0 0 4px var(--color-bg);
+  }
+
+  .timeline-item__period {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    color: var(--color-accent);
+    margin-bottom: var(--space-1);
+  }
+
+  .timeline-item__role {
+    font-size: var(--fs-lg);
+  }
+
+  .timeline-item__company {
+    color: var(--color-text-secondary);
+    font-size: var(--fs-sm);
+    margin-top: 0.15rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .timeline-item__summary {
+    margin: 0;
+  }
+</style>
