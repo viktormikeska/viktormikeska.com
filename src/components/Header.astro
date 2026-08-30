@@ -1,6 +1,5 @@
 ---
 import Icon from './Icon.astro';
-import SocialLinks from './SocialLinks.astro';
 import { navItems } from '../data/nav';
 ---
 
@@ -20,10 +19,6 @@ import { navItems } from '../data/nav';
         }
       </ul>
     </nav>
-
-    <div class="header__socials">
-      <SocialLinks />
-    </div>
 
     <button
       class="hamburger"
@@ -64,17 +59,13 @@ import { navItems } from '../data/nav';
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: var(--space-3);
   }
 
   .nav__list {
     display: flex;
     gap: var(--space-4);
-  }
-
-  .header__socials {
-    flex-shrink: 0;
   }
 
   .nav__list a {
@@ -138,10 +129,6 @@ import { navItems } from '../data/nav';
   @media (max-width: 720px) {
     .header__inner {
       justify-content: flex-end;
-    }
-
-    .header__socials {
-      display: none;
     }
 
     .hamburger {

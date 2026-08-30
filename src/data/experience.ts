@@ -30,7 +30,7 @@ export const experience: ExperienceEntry[] = [
     period: "2020 — 2023",
     location: "Remote",
     summary:
-      "Built two Web3 projects on Cardano — a native token and an NFT collection. Designed and developed the project websites, handled the blockchain side of things, built the brand identity, and ran community, social media, and strategic partnerships within a fully decentralized ecosystem.",
+      "Built two Web3 projects on Cardano blockchain end to end — owned product direction, brand identity, go-to-market strategy, managed community growth and strategic partnerships, handled all technical implementation including blockchain and web development.",
   },
   {
     role: "Ecommerce Business Owner",
