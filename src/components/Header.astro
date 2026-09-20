@@ -4,63 +4,89 @@ import { navItems } from '../data/nav';
 ---
 
 <header class="header" id="site-header">
-  <div class="header__backdrop" aria-hidden="true"></div>
-  <div class="container header__inner">
-    <nav class="nav" id="site-nav" aria-label="Primary">
-      <ul class="nav__list">
-        {
-          navItems.map((item) => (
-            <li>
-              <a href={`#${item.id}`} data-nav-id={item.id}>
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
+  <div class="container">
+    <div class="header__inner">
+      <div class="header__backdrop" aria-hidden="true"></div>
+      <nav class="nav" id="site-nav" aria-label="Primary">
+        <ul class="nav__list">
+          {
+            navItems.map((item) => (
+              <li>
+                <a href={`#${item.id}`} data-nav-id={item.id}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
 
-    <button
-      class="hamburger"
-      id="nav-toggle"
-      aria-expanded="false"
-      aria-controls="site-nav"
-      aria-label="Toggle navigation menu"
-    >
-      <Icon name="menu" class="icon-menu" />
-      <Icon name="close" class="icon-close" />
-    </button>
+      <button
+        class="hamburger"
+        id="nav-toggle"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        aria-label="Toggle navigation menu"
+      >
+        <Icon name="menu" class="icon-menu" />
+        <Icon name="close" class="icon-close" />
+      </button>
+    </div>
   </div>
 </header>
 
 <style>
   .header {
+    --pill-height: 52px;
     position: sticky;
     top: 0;
     z-index: 100;
     height: var(--header-height);
     display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--color-border);
+    align-items: flex-start;
+    padding-top: calc((var(--header-height) - var(--pill-height)) / 2);
+    /* The bar itself is invisible; only the pill is interactive so the page
+       underneath stays clickable around it. */
+    pointer-events: none;
   }
 
-  /* Separate layer for the blur/tint so backdrop-filter doesn't sit on an
-     ancestor of .nav — backdrop-filter creates a containing block for
+  .header > .container {
+    pointer-events: none;
+  }
+
+  /* Floating pill, exactly as wide as the content column (.container's inner
+     box). The blur/tint lives on its own layer so backdrop-filter doesn't sit
+     on an ancestor of .nav — backdrop-filter creates a containing block for
      position:fixed descendants, which would break the mobile nav panel's
      fixed positioning relative to the viewport. */
-  .header__backdrop {
-    position: absolute;
-    inset: 0;
-    background: color-mix(in srgb, var(--color-bg) 82%, transparent);
-    backdrop-filter: blur(10px);
-  }
-
   .header__inner {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-3);
+    height: var(--pill-height);
+    padding-inline: var(--space-3);
+    pointer-events: auto;
+  }
+
+  .header__backdrop {
+    position: absolute;
+    inset: 0;
+    /* Half the collapsed height: a full pill when closed, softly rounded
+       when the mobile menu expands it. */
+    border-radius: calc(var(--pill-height) / 2);
+    background: color-mix(in srgb, var(--color-bg) 78%, transparent);
+    border: 1px solid var(--color-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--color-text) 6%, transparent),
+      0 8px 32px rgb(0 0 0 / 0.35);
+  }
+
+  .nav {
+    position: relative;
   }
 
   .nav__list {
@@ -102,6 +128,7 @@ import { navItems } from '../data/nav';
   }
 
   .hamburger {
+    position: relative;
     display: none;
     align-items: center;
     justify-content: center;
@@ -127,40 +154,74 @@ import { navItems } from '../data/nav';
   }
 
   @media (max-width: 720px) {
+    /* The pill itself expands: the hamburger row stays on top and the link
+       list grows out beneath it (grid-template-rows 0fr -> 1fr), while the
+       glass layer simply follows the container's height. */
     .header__inner {
-      justify-content: flex-end;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: var(--pill-height) auto;
+      row-gap: 0;
+      height: auto;
+      padding-inline: var(--space-2);
     }
 
     .hamburger {
       display: flex;
+      grid-row: 1;
+      justify-self: end;
     }
 
     .nav {
-      position: fixed;
-      inset: var(--header-height) 0 0 0;
-      display: flex;
-      flex-direction: column;
-      background: var(--color-bg-elevated);
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      overflow-y: auto;
+      grid-row: 2;
+      display: grid;
+      grid-template-rows: 0fr;
+      visibility: hidden;
+      transition:
+        grid-template-rows 0.3s ease,
+        visibility 0s linear 0.3s;
     }
 
     .nav.nav-open {
-      transform: translateX(0);
+      grid-template-rows: 1fr;
+      visibility: visible;
+      transition:
+        grid-template-rows 0.3s ease,
+        visibility 0s;
     }
 
     .nav__list {
       flex-direction: column;
       gap: 0;
-      padding: var(--space-3);
+      min-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .nav.nav-open .nav__list {
+      opacity: 1;
+      transition: opacity 0.25s ease 0.1s;
+    }
+
+    .nav__list li:last-child {
+      padding-bottom: var(--space-1);
+    }
+
+    /* No underline or dividers on mobile — the active item is marked by
+       colour only. */
+    .nav__list a::after {
+      display: none;
+    }
+
+    .nav__list a.active {
+      color: var(--color-accent);
     }
 
     .nav__list a {
       display: block;
-      padding: var(--space-3) var(--space-2);
+      padding: var(--space-2) var(--space-1);
       font-size: var(--fs-lg);
-      border-bottom: 1px solid var(--color-border);
     }
   }
 </style>
@@ -169,6 +230,7 @@ import { navItems } from '../data/nav';
   const header = document.getElementById('site-header');
   const nav = document.getElementById('site-nav');
   const toggle = document.getElementById('nav-toggle');
+  const pill = document.querySelector('.header__inner');
   const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav-id]'));
 
   const closeMenu = () => {
@@ -176,9 +238,12 @@ import { navItems } from '../data/nav';
     toggle?.setAttribute('aria-expanded', 'false');
   };
 
+  let openedAtScroll = 0;
+
   toggle?.addEventListener('click', () => {
     const isOpen = nav?.classList.toggle('nav-open');
     toggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
+    openedAtScroll = window.scrollY;
   });
 
   navLinks.forEach((link) => {
@@ -188,7 +253,7 @@ import { navItems } from '../data/nav';
   document.addEventListener('click', (event) => {
     if (!nav?.classList.contains('nav-open')) return;
     const target = event.target as Node;
-    if (!nav.contains(target) && !toggle?.contains(target)) {
+    if (!pill?.contains(target)) {
       closeMenu();
     }
   });
@@ -254,6 +319,12 @@ import { navItems } from '../data/nav';
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
+        if (
+          nav?.classList.contains('nav-open') &&
+          Math.abs(window.scrollY - openedAtScroll) > 80
+        ) {
+          closeMenu();
+        }
         updateActiveSection();
         ticking = false;
       });
