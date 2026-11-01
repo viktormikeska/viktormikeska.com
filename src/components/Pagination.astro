@@ -1,0 +1,75 @@
+---
+import Icon from './Icon.astro';
+import { writeupsPageUrl, type WriteupsPage } from '../lib/writeups';
+
+interface Props {
+  page: WriteupsPage;
+}
+
+const { current, total } = Astro.props.page;
+const newer = current > 1 ? writeupsPageUrl(current - 1) : undefined;
+const older = current < total ? writeupsPageUrl(current + 1) : undefined;
+---
+
+{
+  total > 1 && (
+    <nav class="pagination" aria-label="Writeups pages">
+      {newer ? (
+        <a href={newer} rel="prev" class="pagination__link">
+          <Icon name="arrow-left" /> Newer
+        </a>
+      ) : (
+        <span />
+      )}
+      <span class="pagination__status">
+        {current} / {total}
+      </span>
+      {older ? (
+        <a href={older} rel="next" class="pagination__link">
+          Older <Icon name="arrow-right" />
+        </a>
+      ) : (
+        <span />
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .pagination {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--fs-sm);
+  }
+
+  .pagination__status {
+    color: var(--color-text-secondary);
+  }
+
+  .pagination__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    justify-self: start;
+    color: var(--color-accent);
+    transition: opacity 0.15s ease;
+  }
+
+  .pagination__link[rel='next'] {
+    justify-self: end;
+  }
+
+  .pagination__link:hover {
+    opacity: 0.8;
+  }
+
+  .pagination__link :global(svg) {
+    width: 14px;
+    height: 14px;
+  }
+</style>

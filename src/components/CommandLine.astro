@@ -1,0 +1,86 @@
+---
+import { TYPING_CHAR_MS, TYPING_START_MS } from '../lib/command-line';
+
+interface Props {
+  /** Shell command shown after the "$" prompt and typed out on page load. */
+  command: string;
+}
+
+const { command } = Astro.props;
+---
+
+<p
+  class="command-line"
+  aria-hidden="true"
+  style={`--chars: ${command.length}; --char-ms: ${TYPING_CHAR_MS}ms; --typing-start: ${TYPING_START_MS}ms`}
+>
+  <span class="command-line__command">{command}</span><span class="command-line__cursor"></span>
+</p>
+
+<style>
+  .command-line {
+    font-size: var(--fs-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-1);
+  }
+
+  /* The shell prompt itself. */
+  .command-line::before {
+    content: '$ ';
+    color: var(--color-accent);
+  }
+
+  /* Typing is pure CSS: in a monospace font every character is 1ch wide, so
+     the command is revealed by growing its width one character per step. */
+  .command-line__command {
+    display: inline-block;
+    vertical-align: bottom;
+    overflow: hidden;
+    white-space: nowrap;
+    width: calc(var(--chars) * 1ch);
+    animation: type-command calc(var(--chars) * var(--char-ms)) steps(var(--chars), end)
+      var(--typing-start) both;
+  }
+
+  /* Solid block cursor, hidden once the command has been typed. */
+  .command-line__cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.15em;
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    background: var(--color-accent);
+    animation: hide-cursor 0s linear calc(var(--typing-start) + var(--chars) * var(--char-ms) + 200ms)
+      forwards;
+  }
+
+  @keyframes type-command {
+    from {
+      width: 0;
+    }
+  }
+
+  @keyframes hide-cursor {
+    to {
+      visibility: hidden;
+    }
+  }
+
+  :global(.skip-intro) .command-line__command {
+    animation: none;
+  }
+
+  :global(.skip-intro) .command-line__cursor {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .command-line__command {
+      animation: none;
+    }
+
+    .command-line__cursor {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,34 @@
+---
+import { encodedEmail } from '../data/socials';
+
+interface Props {
+  /** Show the decoded address as link text instead of the label. */
+  showAddress?: boolean;
+  label?: string;
+  class?: string;
+}
+
+const { showAddress = false, label = 'Email', class: className } = Astro.props;
+---
+
+<a
+  class:list={['email-link', className]}
+  href="/contact/"
+  data-email={encodedEmail}
+  data-show-address={showAddress ? '' : undefined}
+>
+  <slot />
+  <span class="email-link__text">{showAddress ? 'email' : label}</span>
+</a>
+
+<script>
+  // Decoded at runtime so the address never appears in the static HTML.
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-email]')) {
+    const address = atob(link.dataset.email ?? '');
+    link.href = `mailto:${address}`;
+    if (link.hasAttribute('data-show-address')) {
+      const text = link.querySelector('.email-link__text');
+      if (text) text.textContent = address;
+    }
+  }
+</script>

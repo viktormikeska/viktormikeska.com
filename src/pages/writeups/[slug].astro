@@ -1,0 +1,27 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import WriteupLayout from '../../layouts/WriteupLayout.astro';
+import { getWriteups, writeupsPageOf, writeupsPageUrl, type Writeup } from '../../lib/writeups';
+
+export const getStaticPaths = (async () => {
+  const writeups = await getWriteups({ includeDrafts: import.meta.env.DEV });
+  return writeups.map((writeup, index) => ({
+    params: { slug: writeup.id },
+    // "Back" goes to the archive page that lists this writeup, not always page 1.
+    props: { writeup, backUrl: writeupsPageUrl(writeupsPageOf(index)) },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  writeup: Writeup;
+  backUrl: string;
+}
+
+const { writeup, backUrl } = Astro.props;
+const { Content } = await render(writeup);
+---
+
+<WriteupLayout writeup={writeup} backUrl={backUrl}>
+  <Content />
+</WriteupLayout>

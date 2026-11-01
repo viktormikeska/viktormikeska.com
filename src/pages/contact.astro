@@ -1,0 +1,102 @@
+---
+import CommandLine from '../components/CommandLine.astro';
+import { commandDuration } from '../lib/command-line';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EmailLink from '../components/EmailLink.astro';
+import Icon from '../components/Icon.astro';
+import { socials } from '../data/socials';
+---
+
+<BaseLayout
+  revealStart={commandDuration('cat contact')}
+  title="Contact"
+  description="Get in touch with Viktor Mikeska — email, GitHub, LinkedIn, X, Telegram and YouTube."
+>
+  <div class="container">
+    <header class="page-header">
+      <CommandLine command="cat contact" />
+      <h1 class="page-title reveal" style="--i: 0">Contact</h1>
+      <p class="page-lede reveal" style="--i: 1">
+        Want to collaborate, network, or just talk? Feel free to reach out — I'd love to hear
+        from you.
+      </p>
+    </header>
+
+    <ul role="list" class="contact-list reveal" style="--i: 2">
+      <li>
+        <span class="contact-list__label">email</span>
+        <EmailLink showAddress class="contact-list__value" />
+      </li>
+      {
+        socials.map((social) => (
+          <li>
+            <span class="contact-list__label">{social.id}</span>
+            <a
+              href={social.href}
+              class="contact-list__value"
+              rel="me noopener noreferrer"
+              target="_blank"
+            >
+              <span>{social.href.replace(/^https:\/\/(www\.)?/, '')}</span>
+              <Icon name="arrow-right" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .contact-list {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .contact-list li {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--fs-sm);
+  }
+
+  .contact-list__label {
+    color: var(--color-text-secondary);
+  }
+
+  .contact-list :global(.contact-list__value) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-self: start;
+    max-width: 100%;
+    color: var(--color-text);
+    transition: color 0.15s ease;
+  }
+
+  .contact-list :global(.contact-list__value span) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .contact-list :global(.contact-list__value:hover) {
+    color: var(--color-accent);
+  }
+
+  .contact-list :global(svg) {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 30rem) {
+    .contact-list li {
+      grid-template-columns: 1fr;
+      gap: 0.125rem;
+    }
+  }
+</style>

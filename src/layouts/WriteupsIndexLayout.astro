@@ -1,0 +1,36 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import CommandLine from '../components/CommandLine.astro';
+import WriteupList from '../components/WriteupList.astro';
+import Pagination from '../components/Pagination.astro';
+import { commandDuration } from '../lib/command-line';
+import type { WriteupsPage } from '../lib/writeups';
+
+interface Props {
+  page: WriteupsPage;
+}
+
+const { page } = Astro.props;
+const isFirst = page.current === 1;
+const description = 'Writeups by Viktor Mikeska — testing and breaking web, mobile and AI apps.';
+---
+
+<BaseLayout
+  revealStart={commandDuration('ls writeups/')}
+  title={isFirst ? 'Writeups' : `Writeups — page ${page.current}`}
+  description={isFirst ? description : `${description} Page ${page.current} of ${page.total}.`}
+>
+  <div class="container">
+    <header class="page-header">
+      <CommandLine command="ls writeups/" />
+      <h1 class="page-title reveal" style="--i: 0">Writeups</h1>
+      <p class="page-lede reveal" style="--i: 1">
+        Notes from testing and breaking web, mobile and AI apps.
+      </p>
+    </header>
+    <div class="reveal" style="--i: 2">
+      <WriteupList writeups={page.items} />
+      <Pagination page={page} />
+    </div>
+  </div>
+</BaseLayout>

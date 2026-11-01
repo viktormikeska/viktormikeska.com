@@ -1,0 +1,20 @@
+---
+import type { GetStaticPaths } from 'astro';
+import WriteupsIndexLayout from '../../../layouts/WriteupsIndexLayout.astro';
+import { getWriteups, getWriteupsPage, WRITEUPS_PER_PAGE } from '../../../lib/writeups';
+
+// Pages 2..n of the archive; page 1 is /writeups/ itself.
+export const getStaticPaths = (async () => {
+  const writeups = await getWriteups({ includeDrafts: import.meta.env.DEV });
+  const total = Math.ceil(writeups.length / WRITEUPS_PER_PAGE);
+
+  return Array.from({ length: Math.max(0, total - 1) }, (_, i) => {
+    const page = i + 2;
+    return { params: { page: String(page) }, props: { page: getWriteupsPage(writeups, page) } };
+  });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+---
+
+<WriteupsIndexLayout page={page} />

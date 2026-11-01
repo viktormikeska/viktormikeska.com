@@ -1,0 +1,161 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import WriteupList from '../components/WriteupList.astro';
+import Icon from '../components/Icon.astro';
+import CommandLine from '../components/CommandLine.astro';
+import avatar from '../assets/avatar.png';
+import { getWriteups } from '../lib/writeups';
+import { commandDuration } from '../lib/command-line';
+import { site } from '../data/site';
+import { socials } from '../data/socials';
+
+const allWriteups = await getWriteups({ includeDrafts: import.meta.env.DEV });
+const latest = allWriteups.slice(0, 1);
+
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  url: site.url,
+  description: site.description,
+  image: new URL(avatar.src, Astro.site).toString(),
+  sameAs: socials.map((s) => s.href),
+};
+---
+
+<BaseLayout jsonLd={personJsonLd} revealStart={commandDuration('whoami')}>
+  <section class="intro container" aria-labelledby="intro-title">
+    <CommandLine command="whoami" />
+    <div class="intro__id reveal" style="--i: 0">
+      <!-- Pixel art avatar: served as-is (no resampling) and upscaled by CSS -->
+      <img
+        src={avatar.src}
+        alt="Pixel art portrait of Viktor Mikeska"
+        class="intro__photo"
+        width="96"
+        height="96"
+        loading="eager"
+        decoding="async"
+      />
+      <div class="intro__text">
+        <h1 id="intro-title" class="intro__name">{site.name}</h1>
+        <p class="intro__subtitle">{site.subtitle}</p>
+      </div>
+    </div>
+    <div class="intro__links reveal" style="--i: 1">
+      <SocialLinks />
+    </div>
+  </section>
+
+  <section class="latest container reveal" style="--i: 2" aria-labelledby="latest-title">
+    <h2 id="latest-title" class="section-title">Latest writeup</h2>
+    <WriteupList writeups={latest} headingLevel="h3" />
+    {
+      allWriteups.length > 0 && (
+        <a href="/writeups/" class="read-all">
+          Read all <Icon name="arrow-right" />
+        </a>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .intro {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+  }
+
+  .intro__id {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .intro :global(.intro__photo) {
+    flex-shrink: 0;
+    width: 96px;
+    height: 96px;
+    image-rendering: pixelated;
+    border-radius: 12px;
+    border: 1px solid var(--color-border-strong);
+  }
+
+  @media (max-width: 34rem) {
+    .intro__id {
+      gap: var(--space-2);
+    }
+  }
+
+  /* The text column is a size container so the name can scale to fit it. */
+  .intro__text {
+    flex: 1;
+    min-width: 0;
+    container-type: inline-size;
+  }
+
+  /* Full size on desktop; on narrow screens shrink just enough to keep the
+     name on one line (≈ 8.5ch for 14 characters with the tight tracking). */
+  .intro__name {
+    font-size: min(var(--fs-2xl), 11.5cqi);
+    white-space: nowrap;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .intro__subtitle {
+    margin-top: var(--space-1);
+    text-wrap: pretty;
+    color: var(--color-text-secondary);
+    font-size: var(--fs-base);
+  }
+
+  .intro__links {
+    margin-top: var(--space-4);
+  }
+
+  .section-title {
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    padding-bottom: var(--space-1);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .latest :global(.empty-state) {
+    margin-top: var(--space-3);
+  }
+
+  .read-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: var(--space-3);
+    padding: 0.625rem 1rem;
+    font-size: var(--fs-sm);
+    color: var(--color-accent);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius);
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .read-all:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+
+  .read-all :global(svg) {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.15s ease;
+  }
+
+  .read-all:hover :global(svg) {
+    transform: translateX(2px);
+  }
+</style>

@@ -1,0 +1,8 @@
+---
+import WriteupsIndexLayout from '../../layouts/WriteupsIndexLayout.astro';
+import { getWriteups, getWriteupsPage } from '../../lib/writeups';
+
+const writeups = await getWriteups({ includeDrafts: import.meta.env.DEV });
+---
+
+<WriteupsIndexLayout page={getWriteupsPage(writeups, 1)} />
