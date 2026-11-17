@@ -1,0 +1,101 @@
+---
+import { Image } from 'astro:assets';
+import SocialLinks from './SocialLinks.astro';
+import profilePhoto from '../assets/profile-photo.webp';
+---
+
+<section id="hero" class="section hero">
+  <div class="container">
+    <div class="hero__inner">
+      <div class="hero__media">
+        <Image
+          src={profilePhoto}
+          alt="Portrait of Viktor Mikeska"
+          class="hero__photo"
+          width={360}
+          height={360}
+          quality={90}
+          format="webp"
+          fit="cover"
+        />
+      </div>
+
+      <div class="hero__content">
+        <h1 class="hero__name">Viktor Mikeska</h1>
+        <SocialLinks class="hero__socials" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-top: var(--space-6);
+  }
+
+  .hero__inner {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .hero__media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero__photo {
+    width: 180px;
+    height: 180px;
+    border-radius: 999px;
+    object-fit: cover;
+    border: 3px solid var(--color-accent);
+  }
+
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    gap: var(--space-2);
+  }
+
+  .hero__name {
+    font-size: var(--fs-3xl);
+    letter-spacing: -0.02em;
+  }
+
+  @media (min-width: 721px) {
+    .hero__inner :global(.hero__socials) {
+      gap: 1rem;
+    }
+
+    .hero__inner :global(.hero__socials a) {
+      width: 44px;
+      height: 44px;
+    }
+
+    .hero__inner :global(.hero__socials svg) {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .hero__inner {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: var(--space-4);
+    }
+
+    .hero__inner .hero__media {
+      order: -1;
+    }
+
+    .hero__content {
+      width: 100%;
+    }
+  }
+</style>

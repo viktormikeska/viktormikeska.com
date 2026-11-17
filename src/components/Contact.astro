@@ -1,0 +1,66 @@
+---
+import Icon from './Icon.astro';
+---
+
+<section id="contact" class="section contact">
+  <div class="container">
+    <p class="eyebrow">Contact</p>
+    <h2 class="section-title">Let's Talk</h2>
+    <p class="contact__lede">
+      Want to collaborate, network, or just talk? Feel free to reach out — I'd love to hear from
+      you.
+    </p>
+
+    <button id="email-cta" class="email-cta" type="button">
+      <Icon name="email" />
+      <span>Email Me</span>
+    </button>
+  </div>
+</section>
+
+<style>
+  .contact__lede {
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-5);
+  }
+
+  .email-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 0.85rem 2rem;
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    color: var(--color-text);
+    background: transparent;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 999px;
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .email-cta:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .email-cta :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+</style>
+
+<script>
+  // Base64-encoded rather than a plain string literal — a template literal
+  // built from two const strings gets constant-folded by the minifier back
+  // into a plain-text address in the shipped HTML, defeating the point.
+  // atob() is a runtime browser call, so the minifier can't pre-evaluate it.
+  const encodedAddress = 'dmlrLm1pa2Vza2FAZ21haWwuY29t';
+
+  document.getElementById('email-cta')?.addEventListener('click', () => {
+    const address = atob(encodedAddress);
+    const subject = encodeURIComponent('Hello from your website');
+    window.location.href = `mailto:${address}?subject=${subject}`;
+  });
+</script>
